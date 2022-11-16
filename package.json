@@ -1,0 +1,24 @@
+{
+  "name": "chat-web-application---using-node",
+  "version": "1.0.0",
+  "description": "readme",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sathishcs20/Chat-Web-Application---Using-Node-js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sathishcs20/Chat-Web-Application---Using-Node-js/issues"
+  },
+  "homepage": "https://github.com/sathishcs20/Chat-Web-Application---Using-Node-js#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "hbs": "^4.2.0"
+  }
+}
