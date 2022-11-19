@@ -13,10 +13,15 @@ app.get("/",(req,res)=>
 {
     res.render("index")
 })
-io.on("connection",()=>
+io.on("connection",(socket)=>
 {
-    console.log("new connection made")
+    
+    socket.on("Sendmessage",(message)=>
+    {
+        io.emit("message",message)
+    })
 })
+
 
 server.listen(3000,()=>
 {
