@@ -8,10 +8,7 @@ const {generateMessage,generateLocationMessage}=require("./utils/generateMsg")
 app.use(express.static("../public"))
 
 
-app.get("/",(req,res)=>
-{
-    res.render("index")
-})
+
 io.on("connection",(socket)=>
 {
     socket.broadcast.emit("message",generateMessage("New user joined")) //broadcast.emit will emit the message to all the connections except the one joined
@@ -22,6 +19,7 @@ io.on("connection",(socket)=>
     })
     socket.on("sendLocation",(lati,longi,callback)=>
     {
+        console.log("http://google.com/maps?q="+lati+","+longi)
         io.emit("locationMessage",generateLocationMessage("http://google.com/maps?q="+lati+","+longi))
         callback()
     })
