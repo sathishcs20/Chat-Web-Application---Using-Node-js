@@ -13,6 +13,11 @@ app.get("/",(req,res)=>
 {
     res.render("index")
 })
+io.on("connection",()=>
+{
+    console.log("new connection made")
+})
+
 server.listen(3000,()=>
 {
     console.log('server started')
