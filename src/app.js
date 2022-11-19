@@ -15,10 +15,20 @@ app.get("/",(req,res)=>
 })
 io.on("connection",(socket)=>
 {
-    
-    socket.on("Sendmessage",(message)=>
+    socket.broadcast.emit("message","user joined") //broadcast.emit will emit the message to all the connections except the one joined
+    socket.on("Sendmessage",(message,callback)=>
     {
-        io.emit("message",message)
+        io.emit("message",message) //io.emit will emit message to all the connections
+        callback()
+    })
+    socket.on("sendLocation",(lati,longi,callback)=>
+    {
+        io.emit("message","http://google.com/maps?q="+lati+","+longi)
+        callback()
+    })
+    socket.on("disconnect",()=>
+    {
+        io.emit("message","user left")
     })
 })
 
