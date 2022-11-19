@@ -22,7 +22,7 @@ io.on("connection",(socket)=>
     })
     socket.on("sendLocation",(lati,longi,callback)=>
     {
-        io.emit("message","http://google.com/maps?q="+lati+","+longi)
+        io.emit("locationMessage","http://google.com/maps?q="+lati+","+longi)
         callback()
     })
     socket.on("disconnect",()=>
