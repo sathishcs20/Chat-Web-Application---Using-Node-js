@@ -8,6 +8,23 @@ const locationTemplate=document.getElementById("location-template").innerHTML
 const sidebarTemplate =document.getElementById("sidebar-template").innerHTML
 const socket=io()
 
+const autoscroll=()=>
+{
+    const newMessage=msg.lastElementChild
+
+    const newMessageStyles =getComputedStyle(newMessage)
+    const newMessageMargin =parseInt(newMessageStyles.marginBottom)
+    const newMessageHeight = newMessage.offsetHeight + newMessageMargin
+
+    const visibleHeight = msg.offsetHeight 
+    const containerHeight = msg.scrollHeight
+    const  scrollOfset=msg.scrollTop + visibleHeight
+
+    if(containerHeight - newMessageHeight <=scrollOfset)
+    {
+        msg.scrollTop = msg.scrollHeight
+    }
+}
 const {username,room} = Qs.parse(location.search,{ignoreQueryPrefix : true})
 
 socket.on('roomData',({room,users})=>
@@ -20,12 +37,14 @@ socket.on('message',(m)=>
     
     const html=Mustache.render(messageTemplate,{username:m.username,message:m.message,createdAt:moment(m.createdAt).format("h:mm a")})
     msg.insertAdjacentHTML("beforeend",html)
+    autoscroll()
 })
 socket.on('locationMessage',(m)=>
 {
      
     const html=Mustache.render(locationTemplate,{username:m.username,message:m.message,createdAt:moment(m.createdAt).format("h:mm a")})
     msg.insertAdjacentHTML("beforeend",html)
+    autoscroll()
 })
 
 
