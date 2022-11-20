@@ -6,35 +6,50 @@ const server = http.createServer(app)
 const io= socketio(server)
 const {generateMessage,generateLocationMessage}=require("./utils/generateMsg")
 app.use(express.static("../public"))
-
+const{addUser,removeUser,getUser,getUsersinRoom}=require("./utils/user")
 
 
 io.on("connection",(socket)=>
 {
     // socket.broadcast.emit("message",generateMessage("New user joined")) //broadcast.emit will emit the message to all the connections except the one joined
 
-    socket.on("join",({username,room})=>
+    socket.on("join",({username,room},callback)=>
     {
-        socket.join(room)
-        socket.broadcast.to(room).emit("message",generateMessage(username+" joined")) 
-
+        const {error,user} =addUser({id:socket.id,username,room})
+        console.log(error)
+        if(error)
+        {
+            return callback(error)
+        }
+        socket.join(user.room)
+        socket.broadcast.to(user.room).emit("message",generateMessage("Admin",user.username+" joined")) 
+        callback()
         //io.emit           socket.broadcast.emit
         //io.to().smit      socket.broadcast.to().smit  these two will emit messages to a particular room
     })
     socket.on("Sendmessage",(message,callback)=>
     {
-        io.emit("message",generateMessage(message)) //io.emit will emit message to all the connections
+        const user=getUser(socket.id)
+        console.log("inside send")
+        console.log(user)
+        io.to(user.room).emit("message",generateMessage(user.username,message)) //io.emit will emit message to all the connections
         callback()
     })
     socket.on("sendLocation",(lati,longi,callback)=>
     {
+        const user=getUser(socket.id)
         console.log("http://google.com/maps?q="+lati+","+longi)
-        io.emit("locationMessage",generateLocationMessage("http://google.com/maps?q="+lati+","+longi))
+        io.to(user.room).emit("locationMessage",generateLocationMessage(user.username,"http://google.com/maps?q="+lati+","+longi))
         callback()
     })
     socket.on("disconnect",()=>
     {
-        io.emit("message",generateMessage("user left"))
+        const user=removeUser(socket.id)
+        if(user)
+        {
+            io.to(user.room).emit("message",generateMessage('Admin',`${user.username} has left`))
+        }
+        
     })
 })
 
