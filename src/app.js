@@ -6,7 +6,7 @@ const server = http.createServer(app)
 const io= socketio(server)
 const {generateMessage,generateLocationMessage}=require("./utils/generateMsg")
 app.use(express.static("../public"))
-const{addUser,removeUser,getUser,getUsersinRoom}=require("./utils/user")
+const{addUser,removeUser,getUser,getUsersInRoom}=require("./utils/user")
 
 
 io.on("connection",(socket)=>
@@ -16,13 +16,17 @@ io.on("connection",(socket)=>
     socket.on("join",({username,room},callback)=>
     {
         const {error,user} =addUser({id:socket.id,username,room})
-        console.log(error)
+        
         if(error)
         {
             return callback(error)
         }
         socket.join(user.room)
         socket.broadcast.to(user.room).emit("message",generateMessage("Admin",user.username+" joined")) 
+        io.to(user.room).emit('roomData',{
+            room:user.room,
+            users:getUsersInRoom(user.room)
+        })
         callback()
         //io.emit           socket.broadcast.emit
         //io.to().smit      socket.broadcast.to().smit  these two will emit messages to a particular room
@@ -48,6 +52,10 @@ io.on("connection",(socket)=>
         if(user)
         {
             io.to(user.room).emit("message",generateMessage('Admin',`${user.username} has left`))
+            io.to(user.room).emit('roomData',{
+                room:user.room,
+                users:getUsersInRoom(user.room)
+            })
         }
         
     })

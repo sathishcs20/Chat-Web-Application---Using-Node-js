@@ -5,11 +5,16 @@ const msgbtn=document.getElementById('msgbtn')
 const msg=document.getElementById("msg")
 const messageTemplate=document.getElementById("message-template").innerHTML
 const locationTemplate=document.getElementById("location-template").innerHTML
-
+const sidebarTemplate =document.getElementById("sidebar-template").innerHTML
 const socket=io()
 
 const {username,room} = Qs.parse(location.search,{ignoreQueryPrefix : true})
 
+socket.on('roomData',({room,users})=>
+{
+    const html=Mustache.render(sidebarTemplate,{room,users})
+    document.querySelector('#sidebar').innerHTML=html
+})
 socket.on('message',(m)=>
 {
     
