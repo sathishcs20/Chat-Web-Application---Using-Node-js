@@ -2,29 +2,31 @@ const formid=document.getElementById('form')
 const btnloc=document.getElementById("btnloc")
 const message=document.getElementById('message')
 const msgbtn=document.getElementById('msgbtn')
-const msg=document.getElementById("msg")
+const $messages=document.getElementById("msg")
 const messageTemplate=document.getElementById("message-template").innerHTML
 const locationTemplate=document.getElementById("location-template").innerHTML
 const sidebarTemplate =document.getElementById("sidebar-template").innerHTML
 const socket=io()
 
-const autoscroll=()=>
-{
-    const newMessage=msg.lastElementChild
+const autoscroll = () => {
+    // New message element
+    const $newMessage = $messages.lastElementChild;
+    // Height of the new message
+    const newMessageStyles = getComputedStyle($newMessage);
+    const newMessageMargin = parseInt(newMessageStyles.marginBottom);
+    const newMessageHeight = $newMessage.offsetHeight + newMessageMargin;
+    // Visible height
+    const visibleHeight = $messages.offsetHeight
+    // Height of messages container
+    const containerHeight = $messages.scrollHeight;
+    // How far have the user scrolled
+    const scrollOffset = $messages.scrollTop + visibleHeight;
 
-    const newMessageStyles =getComputedStyle(newMessage)
-    const newMessageMargin =parseInt(newMessageStyles.marginBottom)
-    const newMessageHeight = newMessage.offsetHeight + newMessageMargin
-
-    const visibleHeight = msg.offsetHeight 
-    const containerHeight = msg.scrollHeight
-    const  scrollOfset=msg.scrollTop + visibleHeight
-
-    if(containerHeight - newMessageHeight <=scrollOfset)
-    {
-        msg.scrollTop = msg.scrollHeight
+    if (containerHeight - newMessageHeight <= scrollOffset) {
+        $messages.scrollTop = $messages.scrollHeight;
     }
-}
+
+};
 const {username,room} = Qs.parse(location.search,{ignoreQueryPrefix : true})
 
 socket.on('roomData',({room,users})=>
@@ -36,14 +38,14 @@ socket.on('message',(m)=>
 {
     
     const html=Mustache.render(messageTemplate,{username:m.username,message:m.message,createdAt:moment(m.createdAt).format("h:mm a")})
-    msg.insertAdjacentHTML("beforeend",html)
+    $messages.insertAdjacentHTML("beforeend",html)
     autoscroll()
 })
 socket.on('locationMessage',(m)=>
 {
      
     const html=Mustache.render(locationTemplate,{username:m.username,message:m.message,createdAt:moment(m.createdAt).format("h:mm a")})
-    msg.insertAdjacentHTML("beforeend",html)
+    $messages.insertAdjacentHTML("beforeend",html)
     autoscroll()
 })
 
